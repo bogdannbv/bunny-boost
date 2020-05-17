@@ -14,7 +14,8 @@
 #define STRENGTH_DEFAULT "2"
 
 ConVar CvarEnabled;
-ConVar CvarStrength;
+ConVar CvarUpwardStrength;
+ConVar CvarForwardStrength;
 
 public Plugin myinfo =
 {
@@ -31,7 +32,9 @@ public void OnPluginStart()
 
 	CvarEnabled = CreateConVar("sm_bunny-boost_enabled", ENABLED_DEFAULT, "Determines if the plugin should be enabled.", FCVAR_NOTIFY|FCVAR_REPLICATED);
 
-	CvarStrength = CreateConVar("sm_bunny-boost_strength", STRENGTH_DEFAULT, "The jump boost strength.", FCVAR_NOTIFY|FCVAR_REPLICATED);
+	CvarUpwardStrength = CreateConVar("sm_bunny-boost_upward_strength", STRENGTH_DEFAULT, "The upwards boost strength.", FCVAR_NOTIFY|FCVAR_REPLICATED);
+
+	CvarForwardStrength = CreateConVar("sm_bunny-boost_forward_strength", STRENGTH_DEFAULT, "The forwards boost strength.", FCVAR_NOTIFY|FCVAR_REPLICATED);
 
 	AutoExecConfig(true);
 
@@ -46,8 +49,6 @@ public Action EventPlayerJump(Event event, const char[] name, bool dontBroadcast
 
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 
-	float strength = CvarStrength.FloatValue;
-
 	float viewVector[3];
 
 	float angle0 = GetEntPropFloat(client, Prop_Send, "m_angEyeAngles[0]");
@@ -61,9 +62,9 @@ public Action EventPlayerJump(Event event, const char[] name, bool dontBroadcast
 	viewVector[1] = Sine(DegToRad(angle1));
 	viewVector[2] = -1 * Sine(DegToRad(angle0));
 
-	viewVector[0] = float(HORIZONTAL) * strength * viewVector[0];
-	viewVector[1] = float(HORIZONTAL) * strength * viewVector[1];
-	viewVector[2] = float(VERTICAL) * strength;
+	viewVector[0] = float(HORIZONTAL) * CvarForwardStrength.FloatValue * viewVector[0];
+	viewVector[1] = float(HORIZONTAL) * CvarForwardStrength.FloatValue * viewVector[1];
+	viewVector[2] = float(VERTICAL) * CvarUpwardStrength.FloatValue;
 
 	AddVectors(baseVelocity, viewVector, viewVector);
 
